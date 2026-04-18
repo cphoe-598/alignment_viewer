@@ -1,5 +1,9 @@
 cmake_minimum_required(VERSION 3.5)
 
+project (alignment_viewer)
+
+# ----------------------------------------------------------------------------
+# FTXUI section
 
 include(FetchContent)
 
@@ -10,7 +14,7 @@ FetchContent_Declare(ftxui
 
 FetchContent_MakeAvailable(ftxui)
 
-project (FTXUI_test)
+add_subdirectory(external/ftxui)
 
 add_executable(main main.cpp)
 
