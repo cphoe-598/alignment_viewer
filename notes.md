@@ -57,12 +57,5 @@ target_link_libraries(main
 
 ## Build using CMake
 
-In `src/`, run the following:
+Run the script `run_cmake.sh` I wrote already.
 
-```bash
-cmake -S ./ -B ../build/
-```
-
-Navigate to `build/`, run `make`.
-
-Executable will be in `build/`.
