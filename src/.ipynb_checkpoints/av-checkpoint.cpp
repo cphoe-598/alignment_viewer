@@ -1,4 +1,3 @@
-
 #include <iostream>
 #include <fstream>
 #include <string>
@@ -85,16 +84,18 @@ int main(int argc, const char *argv[])
 				})
 		);
 	}
-
 	Element document = vbox(hboxes);
-
+	
 	// create full-width/-height screen, limited to 80 wide
 	document = document | size(WIDTH, LESS_THAN, 80);
 	auto screen = Screen::Create(
 		Dimension::Full(), Dimension::Fit(document)  // W, H
 	);
 	Render(screen, document);
+
+	// Print the screen to the console.
 	screen.Print();
 
 	return 0;
 }
+
