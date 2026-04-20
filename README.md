@@ -14,6 +14,10 @@ The program parses the file, and displays sequence identifiers and sequences to 
 
 ## Installation
 
+### Requirements
+
+-  [CMake](https://cmake.org/) >= 3.5
+
 Clone this repository, then run the crude cmake script. An executable `av` will be located in the `build` directory.
 
 ```bash
