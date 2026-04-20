@@ -1,1 +1,4 @@
 build/*
+*ipynb*
+fetch_submod_ftxui.sh
+notes.md
