@@ -48,9 +48,9 @@ Changed the way it parses the Phylip file. Any taxa name length should now work.
 
 ```
 1 20
-dude   AGCTACACGC
-bro    AGC_ACAAGC
-fella  AGC_ACAAGC
+t1  AGCTACACGC
+t2  AGC_ACAAGC
+t3  AGC_ACAAGC
 
 ACGT___AC_
 ACGT___ACT
