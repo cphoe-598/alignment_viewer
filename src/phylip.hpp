@@ -3,8 +3,17 @@
 #ifndef PHYLIP_H
 #define PHYLIP_H
 
+
+struct Phylip {
+	// holds pairs of [TAXA, SEQUENCE]
+	std::vector< std::pair<std::string, std::string> > entries;
+	int n_taxa;   // number of taxa-sequence pairs
+	int seq_len;  // length of seqeunces
+};
+
 std::pair<int, int> phylip_size(const std::string file);
 
-std::vector< std::pair<std::string, std::string> > phylip_collect(const std::string file, int max_name_len, const int taxa, const int length);
+struct Phylip phylip_collect(const std::string file);
+
 
 #endif

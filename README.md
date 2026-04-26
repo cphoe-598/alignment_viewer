@@ -2,6 +2,9 @@
 
 A sequence alignment viewer for me to practice C++. This program generates a TUI powered by [FTXUI](https://github.com/ArthurSonzogni/FTXUI).
 
+> [!NOTE]
+> Program functional for small, non-interleaved Phylip files.
+
 ## Usage
 
 ```bash
@@ -35,10 +38,13 @@ cd alignment_viewer
 
 ### Last time
 
-Changed the way it parses the Phylip file. Any taxa name length should now work.
+-   Rearranged some code. Made a struct `Phylip` that contains taxa:sequence pairs, the number of taxa, and the length of sequences.
+-   I've discovered the limitations of FTXUI's `Document` object. If your screen size is too small, then the display doesn't work after a certain point.
 
 ### Next time
 
+-   I downloaded the `scrollable.cpp` sample from FTXUI. See [here](https://arthursonzogni.github.io/FTXUI/examples_2component_2scrollbar_8cpp-example.html).
+    -   Will adapt this so that I have a single, fixed window that scrolls up-down and left-right.
 -   Combine sequences so they display in a single box.
 -   Map background colors to nucleotides.
 

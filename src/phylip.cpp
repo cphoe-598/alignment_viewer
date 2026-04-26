@@ -8,7 +8,6 @@
 
 #include "phylip.hpp"
 
-using namespace std;
 
 /*
  * Process first line of a phylip file.
@@ -38,31 +37,40 @@ std::pair<int, int> phylip_size(const std::string file)
 /*
  * Collect pairs of [ NAME, SEQUENCE ] from a Phylip file.
  */
-std::vector< std::pair<std::string, std::string> > phylip_collect(const std::string file, const int taxa, const int length)
+Phylip phylip_collect(const std::string file)
 {
 	std::ifstream f(file);
 	if (!f.good()) {
 		throw std::runtime_error("File (" + file + ") does not exist or can't be opened.");
 	}
+
+	// get number of taxa, and length of sequences
+	auto [taxa, length] = phylip_size(file);
 	
-	// return vector
-	std::vector< std::pair<std::string, std::string> > records(taxa);
+	// initialize Phylip records object
+	Phylip records;
+	records.n_taxa  = taxa;
+	records.seq_len = length;
+	records.entries.resize(records.n_taxa);
+
+	if (records.n_taxa == 0) {
+		return records;
+	}
 	
 	// collect pairs of (name, sequence)
 	std::string line;
 	if (f.is_open()) {
 		f.ignore(std::numeric_limits<std::streamsize>::max(), '\n');  // skip first line
-		for (int i = 0; i < taxa; ++i) {
+		for (int i = 0; i < records.n_taxa; ++i) {
 			std::getline(f, line);
 
+			// sequence length if known, so just split line by substrings
 			int seq_start = line.size() - length;
-
-			records[i].first  = line.substr(0, seq_start);       // taxa
-			records[i].second = line.substr(seq_start, length);  // sequence
+			records.entries[i].first  = line.substr(0, seq_start);       // taxa
+			records.entries[i].second = line.substr(seq_start, length);  // sequence
 		}
 		f.close();
-		return records;
-	} else {
-		throw std::runtime_error("File (" + file + ") appears to contain zero taxa.");
 	}
+	return records;
 }
+

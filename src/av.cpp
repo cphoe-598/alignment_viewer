@@ -45,22 +45,22 @@ int main(int argc, const char *argv[])
 
 	const char* file = argv[1];
 
-	// get number of taxa, and sequence length, from 1st line
-	auto [taxa, length] = phylip_size(file);
+	// collect records from file
+	Phylip records = phylip_collect(file);
 
-	// collect phylip records
-	// returns vector of pairs: [taxa, sequence]
-	auto records = phylip_collect(file, MAX_NAME_LEN, taxa, length);
+	if (records.n_taxa == 0) {
+		std::cout << "File contained zero entries, or could not be parsed.\n";
+	}
 
 	// TUI display
 	using namespace ftxui;
 	std::vector<Element>  hboxes;
-	hboxes.reserve(taxa);
-	for (int i = 0; i < taxa; ++i) {
+	hboxes.reserve(records.n_taxa);
+	for (int i = 0; i < records.n_taxa; ++i) {
 		hboxes.push_back(
 				hbox({
-					text(records[i].first)  | border,
-					text(records[i].second) | border | flex,
+					text(records.entries[i].first)  | border,
+					text(records.entries[i].second) | border | flex,
 				})
 		);
 	}
@@ -68,7 +68,8 @@ int main(int argc, const char *argv[])
 	Element document = vbox(hboxes);
 
 	// create full-width/-height screen, limited to [LENGTH] wide
-	document = document | size(WIDTH, LESS_THAN, (MAX_NAME_LEN + length + 2));
+	// document = document | size(WIDTH, LESS_THAN, (MAX_NAME_LEN + records.seq_len + 2));
+	document = document;
 	auto screen = Screen::Create(
 		Dimension::Full(), Dimension::Fit(document)  // W, H
 	);
