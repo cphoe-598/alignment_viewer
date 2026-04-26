@@ -1,9 +1,10 @@
 #!/usr/bin/env bash
 
+# configure build
 mkdir -p build
+cmake -B build -G Ninja
 
-cmake -B build
+# build
+cmake --build build --target clean
 cmake --build build --parallel $(nproc)
 
-cd build
-make

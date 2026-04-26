@@ -1,8 +1,10 @@
-
 #include <iostream>
 #include <fstream>
 #include <string>
 #include <sstream>
+#include <utility>
+
+#include "phylip.hpp"
 
 #include <ftxui/dom/elements.hpp>
 #include <ftxui/screen/screen.hpp>
@@ -42,36 +44,10 @@ int main(int argc, const char *argv[])
 	const char* file = argv[1];
 
 	// get number of entries, and sequence length, from 1st line
-	int entries, seq_len;
-	std::ifstream f(file);
-	if (f.good()) {
-		std::string first;
-		getline(f, first);
-		std::stringstream ss(first);
-		ss >> entries >> seq_len;
-	} else {
-		std::cerr << "File (" << file << ") does not exist or can't be opened.\n";
-		return 1;
-	}
+	auto [entries, length] = phylip_size(file);
 
-	// collect tuples of (name, sequence)
-	std::vector< std::array<std::string, 2> > records(entries);
-	std::string line;
-	int max_name_len = 10;
-	if (f.is_open()) {
-		for (int i = 0; i < entries; ++i) {
-			std::getline(f, line);
-			std::stringstream ss(line);
-			ss >> records[i][0] >> records[i][1];  // assign values
-			if (records[i][0].size() > max_name_len) {
-				max_name_len = records[i][0].size();  // for name padding
-			}
-		}
-		f.close();
-	} else {
-		std::cerr << "File (" << file << ") appears to contain zero entries.\n";
-		return 1;
-	}
+	std::vector<
+
 
 	// TUI display
 	using namespace ftxui;
@@ -88,8 +64,8 @@ int main(int argc, const char *argv[])
 
 	Element document = vbox(hboxes);
 
-	// create full-width/-height screen, limited to 80 wide
-	document = document | size(WIDTH, LESS_THAN, 80);
+	// create full-width/-height screen, limited to [LENGTH] wide
+	document = document | size(WIDTH, LESS_THAN, length);
 	auto screen = Screen::Create(
 		Dimension::Full(), Dimension::Fit(document)  // W, H
 	);
