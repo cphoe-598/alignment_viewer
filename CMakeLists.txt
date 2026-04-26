@@ -4,14 +4,11 @@ project (alignment_viewer
   LANGUAGES CXX
 )
 
-# ----------------------------------------------------------------------------
-# FTXUI section
-
-# already downloaded git submodule
-
+# this directory currently includes an FTXUI Git submodule
 add_subdirectory(external/ftxui)
 
-add_executable(av ./src/av.cpp)
+FILE(GLOB_RECURSE Sources ./src/*.cpp)
+add_executable(av ${Sources})
 
 target_link_libraries(av
   PRIVATE ftxui::screen

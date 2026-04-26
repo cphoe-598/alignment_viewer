@@ -4,58 +4,65 @@
 #include <sstream>
 #include <utility>
 #include <vector>
+#include <limits>
+
+#include "phylip.hpp"
+
+using namespace std;
 
 /*
  * Process first line of a phylip file.
  * Return (a) number of entries, (b) length of sequences
  */
-std::pair<int, int> phylip_size(std::ifstream& f)
+std::pair<int, int> phylip_size(const std::string file)
 {
 	// return value
 	std::pair<int, int> res;
 
-	// process file
+	// open file stream
+	std::ifstream f(file);
+	if (!f.good()) {
+		throw std::runtime_error("File (" + file + ") does not exist or can't be opened.");
+	}
+
+	// get first line
 	std::string first;
 	getline(f, first);
 
 	// get values
 	std::stringstream ss(first);
-	ss >> res[0] >> res[1];
+	ss >> res.first >> res.second;
 	return res;
 }
 
 /*
  * Collect pairs of [ NAME, SEQUENCE ] from a Phylip file.
  */
-std::vector< std::pair<std::string, std:string> > phylip_collect(const std::string file, int max_name_len)
+std::vector< std::pair<std::string, std::string> > phylip_collect(const std::string file, const int taxa, const int length)
 {
 	std::ifstream f(file);
 	if (!f.good()) {
-		std::cerr << "File (" << file << ") does not exist or can't be opened.\n";
-		return 1;
+		throw std::runtime_error("File (" + file + ") does not exist or can't be opened.");
 	}
 	
-	// get number of entries, and sequence length from file
-	auto [entries, length] = phylip_size(f);
-
 	// return vector
-	std::vector< std::pair<std::string, std::string> > records(entries);
-
+	std::vector< std::pair<std::string, std::string> > records(taxa);
+	
 	// collect pairs of (name, sequence)
 	std::string line;
 	if (f.is_open()) {
-		for (int i = 0; i < entries; ++i) {
+		f.ignore(std::numeric_limits<std::streamsize>::max(), '\n');  // skip first line
+		for (int i = 0; i < taxa; ++i) {
 			std::getline(f, line);
-			std::stringstream ss(line);
-			ss >> records[i][0] >> records[i][1];  // assign values
-			if (records[i][0].size() > max_name_len) {
-				max_name_len = records[i][0].size();  // name padding
-			}
+
+			int seq_start = line.size() - length;
+
+			records[i].first  = line.substr(0, seq_start);       // taxa
+			records[i].second = line.substr(seq_start, length);  // sequence
 		}
 		f.close();
 		return records;
 	} else {
-		std::cerr << "File (" << file << ") appears to contain zero entries.\n";
-		return 1;
+		throw std::runtime_error("File (" + file + ") appears to contain zero taxa.");
 	}
 }

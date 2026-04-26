@@ -16,6 +16,8 @@ constexpr std::string_view HELP_MESSAGE = "\
 Usage: ./av <PHYLIP_FILE>\
 ";
 
+const int MAX_NAME_LEN = 10;
+
 // ----------------------------------------------------------------------------
 // FUNCTIONS
 
@@ -43,21 +45,22 @@ int main(int argc, const char *argv[])
 
 	const char* file = argv[1];
 
-	// get number of entries, and sequence length, from 1st line
-	auto [entries, length] = phylip_size(file);
+	// get number of taxa, and sequence length, from 1st line
+	auto [taxa, length] = phylip_size(file);
 
-	std::vector<
-
+	// collect phylip records
+	// returns vector of pairs: [taxa, sequence]
+	auto records = phylip_collect(file, MAX_NAME_LEN, taxa, length);
 
 	// TUI display
 	using namespace ftxui;
 	std::vector<Element>  hboxes;
-	hboxes.reserve(entries);
-	for (int i = 0; i < entries; ++i) {
+	hboxes.reserve(taxa);
+	for (int i = 0; i < taxa; ++i) {
 		hboxes.push_back(
 				hbox({
-					text(left_pad(records[i][0], max_name_len)) | border,
-					text(records[i][1])                         | border | flex,
+					text(records[i].first)  | border,
+					text(records[i].second) | border | flex,
 				})
 		);
 	}
@@ -65,7 +68,7 @@ int main(int argc, const char *argv[])
 	Element document = vbox(hboxes);
 
 	// create full-width/-height screen, limited to [LENGTH] wide
-	document = document | size(WIDTH, LESS_THAN, length);
+	document = document | size(WIDTH, LESS_THAN, (MAX_NAME_LEN + length + 2));
 	auto screen = Screen::Create(
 		Dimension::Full(), Dimension::Fit(document)  // W, H
 	);

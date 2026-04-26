@@ -12,11 +12,14 @@ Program takes a path to a file in alignment format (currently only takes [Phylip
 
 The program parses the file, and displays sequence identifiers and sequences to the console.
 
+## Requirements
+
+-   [CMake](https://cmake.org/) >= 3.10
+-   [Ninja](https://ninja-build.org/) >= 1.13.2-3
+
+> May work with previous versions of either. These are just what I'm using.
+
 ## Installation
-
-### Requirements
-
--  [CMake](https://cmake.org/) >= 3.5
 
 Clone this repository, then run the crude cmake script. An executable `av` will be located in the `build` directory.
 
@@ -26,8 +29,31 @@ cd alignment_viewer
 ./run_cmake.sh
 ```
 
+---
+
 ## To do
 
--  Combine sequences so they display in a single box.
--  Map background colors to nucleotides.
--  Add support for other alignment file types.
+### Last time
+
+Changed the way it parses the Phylip file. Any taxa name length should now work.
+
+### Next time
+
+-   Combine sequences so they display in a single box.
+-   Map background colors to nucleotides.
+
+### In the distant future
+
+-   Account for interleaved Phylip files. For example:
+
+```
+1 20
+dude   AGCTACACGC
+bro    AGC_ACAAGC
+fella  AGC_ACAAGC
+
+ACGT___AC_
+ACGT___ACT
+ACGT___ACT
+```
+
