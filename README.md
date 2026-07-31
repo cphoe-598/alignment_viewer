@@ -3,7 +3,7 @@
 A sequence alignment viewer for me to practice C++. This program generates a TUI powered by [FTXUI](https://github.com/ArthurSonzogni/FTXUI).
 
 > [!NOTE]
-> Program functional for small, non-interleaved Phylip files.
+> Program functional for small, non-interleaved (i.e., contiguous sequences) Phylip files.
 
 ## Usage
 
@@ -34,22 +34,20 @@ cd alignment_viewer
 
 ---
 
-## To do
+## Progress
 
 ### Last time
 
--   Rearranged some code. Made a struct `Phylip` that contains taxa:sequence pairs, the number of taxa, and the length of sequences.
--   I've discovered the limitations of FTXUI's `Document` object. If your screen size is too small, then the display doesn't work after a certain point.
+-   Entries/sequences are no longer displayed in their own big, clunky boxes. They're now just line-after-line, if that makes sense.
+-   Nucleotides are now mapped to colors. The color scheme I chose isn't great.
 
-### Next time
+### Next up (near future)
 
--   I downloaded the `scrollable.cpp` sample from FTXUI. See [here](https://arthursonzogni.github.io/FTXUI/examples_2component_2scrollbar_8cpp-example.html).
-    -   Will adapt this so that I have a single, fixed window that scrolls up-down and left-right.
--   Combine sequences so they display in a single box.
--   Map background colors to nucleotides.
+-   Adapt the [`scrollable.cpp` FTXUI sample project](https://arthursonzogni.github.io/FTXUI/examples_2component_2scrollbar_8cpp-example.html) to achieve a single, fixed window that scrolls up/down + left/right.
 
-### In the distant future
+### Next up (distant future)
 
+-   Make the color scheme customizable via a config file passed as an additional argument.
 -   Account for interleaved Phylip files. For example:
 
 ```
