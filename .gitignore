@@ -1,3 +1,4 @@
 build/*
 *ipynb*
 notes.md
+valgrind.sh

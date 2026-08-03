@@ -20,21 +20,11 @@ using namespace ftxui;
 
 constexpr std::string_view HELP_MESSAGE = 
 "Alignment viewer TUI\n\n"
-"Usage: ./av <PHYLIP_FILE>\n";
+"Usage: ./av <PHYLIP_FILE> <SEQ_TYPE>\n\n"
+"SEQ_TYPE\t\"dna\" for DNA sequences; \"aa\" for AA sequences (without quotes)\n";
 
-// ----------------------------------------------------------------------------
-// FUNCTIONS
-
-/*
- * Return padded string
- */
-std::string left_pad(const std::string& s, const int size)
-{
-	std::string padded;
-	padded.append(size - s.size(), ' ');
-	padded.append(s);
-	return padded;
-}
+// setting for color coding for either DNA or AA sequences
+std::string SEQ_TYPE = "dna";
 
 
 // ----------------------------------------------------------------------------
@@ -42,39 +32,37 @@ std::string left_pad(const std::string& s, const int size)
 
 int main(int argc, const char *argv[])
 {
-	if (argc != 2) {
+	if (argc < 2 || argc > 3) {
 		std::cerr << HELP_MESSAGE << "\n";
 		return 1;
 	}
 
 	const char* file = argv[1];
 
+	// if specified sequence type argument
+	if (argc > 2) {
+		if (std::string(argv[2]) != "dna" && std::string(argv[2]) != "aa") {
+			throw std::runtime_error("For sequence type, specify 'dna' or 'aa' (without quotes).\n");
+		} else {
+			SEQ_TYPE = argv[2];
+		}
+	}
+
 	// collect records from file
 	Phylip records = phylip_collect(file);
 
 	// handle bad input
 	if (records.n_taxa == 0) {
-		std::cout << "File contained zero entries, or could not be parsed.\n";
+		throw std::runtime_error("File contained zero entries, or could not be parsed.\n");
 	}
 
 	// ---------------------------------------------
 	// TUI display
 
-	// for mapping nucleotides to colors
-	std::vector<Color> palette = {
-		Color(167, 35, 111, 255),
-		Color(245, 108, 64, 255),
-		Color(135, 116, 31, 255),
-		Color(46, 150, 153, 255),
-		Color(0, 0, 0, 0)
-	};
-
 	// place alignment name:sequence pairs into FTXUI vbox
-	Element content = assemble_content(records, palette);
+	Element content = assemble_content(records);
 	
 	// create window
-	// std::string file_base(file);
-	// file_base = file_base.substr(file_base.find_last_of("/\\") + 1);
 	auto window = Window({
 			.inner  = window_content(content),
 			.title  = [file]()->std::string {
@@ -86,18 +74,6 @@ int main(int argc, const char *argv[])
 	});
 	auto screen = App::Fullscreen();
 	screen.Loop(window);
-
-
-	/*
-	// create full-width/-height screen, limited to [LENGTH] wide
-	// Element document = document | size(WIDTH, LESS_THAN, (MAX_NAME_LEN + records.seq_len + 2));
-	// Element document = vbox(content);
-	auto screen = Screen::Create(
-		Dimension::Full(), Dimension::Fit(document)  // W, H
-	);
-	Render(screen, document);
-	screen.Print();
-	*/
 
 	return 0;
 }

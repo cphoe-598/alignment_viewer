@@ -12,6 +12,42 @@
 
 using namespace ftxui;
 
+// ---------------------------------------------------------------------------
+// CONSTANTS
+
+// for mapping nucleotides to colors
+std::vector<Color> PALETTE_DNA = {        // DNA
+	Color(167, 35, 111, 255),  // A
+	Color(245, 108, 64, 255),  // C
+	Color(135, 116, 31, 255),  // G
+	Color(46, 150, 153, 255),  // T
+	Color(0, 0, 0, 0)          // gap
+};
+std::vector<Color> PALETTE_AA = {        // AMINO ACIDS
+	Color(171, 0, 0, 255),  // A
+	Color(171, 0, 146, 255),  // R
+	Color(171, 97, 0, 255),  // D
+	Color(171, 164, 0, 255),  // N
+	Color(134, 171, 0, 255),  // C
+	Color(73, 171, 0, 255),  // E
+	Color(11, 171, 0, 255),  // Q
+	Color(0, 171, 50, 255),  // G
+	Color(0, 171, 112, 255),  // H
+	Color(0, 161, 171, 255),  // I
+	Color(0, 125, 171, 255),  // L
+	Color(1, 1, 1, 255),  // K
+	Color(1, 1, 1, 255),  // M
+	Color(1, 1, 1, 255),  // F
+	Color(1, 1, 1, 255),  // P
+	Color(1, 1, 1, 255),  // S
+	Color(1, 1, 1, 255),  // T
+	Color(1, 1, 1, 255),  // W
+	Color(1, 1, 1, 255),  // Y
+	Color(1, 1, 1, 255),  // V
+	Color(0, 0, 0, 0)          // gap
+};
+
+
 // ----------------------------------------------------------------------------
 
 /* Take a DNA string and a vector of FTXUI colors.
@@ -35,12 +71,21 @@ std::vector<Element> color_dna(const std::string& dna, const std::vector<Color> 
 /* Returns a vector of hboxes, each for one name:sequence
  * entry from the input Phylip file.
  */
-Element assemble_content(const Phylip records, const std::vector<Color> palette)
+Element assemble_content(const Phylip records)
 {
 	// will collect ftxui::hboxes of name:sequence pairs
 	std::vector<Element> hboxes;
 	hboxes.reserve(records.n_taxa);
 
+	// indicate which color palette to use
+	std::vector<Color> palette;
+	if (SEQ_TYPE == "dna") {
+		palette = palette_dna;
+	} else {
+		palette = palette_aa;
+	}
+	
+	// get length of longest taxa name (for padding)
 	int max_len = max_name_len(records);
 
 	for (int i = 0; i < records.n_taxa; ++i) {
@@ -83,13 +128,13 @@ Component window_content(Element content) {
 			explicit Impl(Element content) : content_(std::move(content)) {
 				// create scrollable window
 				auto scrollable_content = Renderer([this] {
-							return content_ | focusPositionRelative(scroll_x, scroll_y) | frame;
+					return content_ | focusPositionRelative(scroll_x, scroll_y) | frame | flex;
 				});
 
 				// left-right slider
 				SliderOption<float> option_x;
 				option_x.value          = &scroll_x;
-				option_x.min            = 0.f;
+				option_x.min            = -0.05f;
 				option_x.max            = 1.f;
 				option_x.increment      = 0.1f;
 				option_x.direction      = Direction::Right;
@@ -100,12 +145,12 @@ Component window_content(Element content) {
 				// up-down slider
 				SliderOption<float> option_y;
 				option_y.value          = &scroll_y;
-				option_y.min            = 0.f;
+				option_y.min            = -0.05f;
 				option_y.max            = 1.f;
 				option_y.increment      = 0.1f;
 				option_y.direction      = Direction::Down;
-				option_y.color_active   = Color::Cyan2;
-				option_y.color_inactive = Color::Cyan2;
+				option_y.color_active   = Color::Grey100;
+				option_y.color_inactive = Color::Grey50;
 				auto scrollbar_y        = Slider(option_y);
 				
 				Add(Container::Vertical({

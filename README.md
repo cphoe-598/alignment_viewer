@@ -5,10 +5,18 @@ A sequence alignment viewer for me to practice C++. This program generates a TUI
 > [!NOTE]
 > Program functional for small, non-interleaved (i.e., contiguous sequences) Phylip files.
 
+---
+
+## CURRENTLY BROKEN BUT IN PROGRESS
+
+---
+
 ## Usage
 
+Example executing with input file `in.phy`:
+
 ```bash
-./av [PATH_TO_ALN_FILE]
+av ./in.phy
 ```
 
 Program takes a path to a file in alignment format (currently only takes [Phylip format](https://en.wikipedia.org/wiki/PHYLIP)).
@@ -41,19 +49,13 @@ cd alignment_viewer
 
 ## Progress
 
-### Last time
+*See `changelog.md` for past changes.
 
--   Adapted the FTXUI [`scrollable.cpp`](https://arthursonzogni.github.io/FTXUI/examples_2component_2scrollbar_8cpp-example.html) sample to achieve a single, fixed window that scrolls up/down + left/right. 
+### To do
 
-### Next up (near future)
-
--   As last time I did little more than copy-paste the FTXUI `scrollable.cpp` sample in order for it to work, I now need to:
-    -   Refine it to better suit my program.
-    -   Deepen my understanding of what's actually going on here. More extensive note-taking is in order.
-
-### Next up (distant future)
-
--   Make the color scheme customizable via a config file passed as an additional argument.
+-   Further tweak viewing window appearance until I'm satisfied.
+-   Add argument to toggle color coding between amino acid and DNA sequences.
+-   Add argument to indicate a path to a config file to customize the color scheme.
 -   Account for interleaved Phylip files. For example:
 
 ```
