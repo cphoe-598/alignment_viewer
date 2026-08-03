@@ -1,3 +1,4 @@
+#include <iostream>
 #include <vector>
 #include <string>
 #include <map>
@@ -20,12 +21,12 @@ std::vector<Element> color_dna(const std::string& dna, const std::vector<Color> 
 {
 	// return value
 	std::vector<Element> multicolored;
-	multicolored.reserve(dna.size());
+	multicolored.reserve(dna.length());
 
 	// map characters to colors
 	std::map<char, Color> m{{'A', palette[0]}, {'C', palette[1]}, {'G', palette[2]},
 				{'T', palette[3]}, {'_', palette[4]}};
-	for (size_t i = 0; i < dna.size(); ++i) {
+	for (size_t i = 0; i < dna.length(); ++i) {
 		multicolored.push_back(text(std::string{dna[i]}) | bgcolor(m[dna[i]]));
 	}
 	return multicolored;
@@ -40,6 +41,8 @@ Element assemble_content(const Phylip records, const std::vector<Color> palette)
 	std::vector<Element> hboxes;
 	hboxes.reserve(records.n_taxa);
 
+	int max_len = max_name_len(records);
+
 	for (int i = 0; i < records.n_taxa; ++i) {
 
 		auto name = records.entries[i].first;
@@ -49,9 +52,11 @@ Element assemble_content(const Phylip records, const std::vector<Color> palette)
 		auto seq_colored = color_dna(sequence, palette);
 
 		// juxtapose the name and sequence of each entry
-		name.push_back(' ');
+		// name.push_back(' ');
 		hboxes.push_back(hbox({
-		    text(name) | bold,
+		    text( [name, len = name.length() - 1, max_len, sequence]()->std::string{
+					return name + std::string((max_len - len), ' ');
+			}() ) | bold,
 		    hbox(std::move(seq_colored))
 		}));
 	}
@@ -72,37 +77,37 @@ Component window_content(Element content) {
 	class Impl : public ComponentBase {
 		private:
 			Element content_;
-			float scroll_x = 0.1f;
-			float scroll_y = 0.1f;
+			float scroll_x = 0.f;
+			float scroll_y = 0.f;
 		public:
 			explicit Impl(Element content) : content_(std::move(content)) {
 				// create scrollable window
 				auto scrollable_content = Renderer([this] {
-							return content_ | focusPositionRelative(scroll_x, scroll_y) | frame | flex;
-							});
+							return content_ | focusPositionRelative(scroll_x, scroll_y) | frame;
+				});
 
 				// left-right slider
 				SliderOption<float> option_x;
 				option_x.value          = &scroll_x;
-				option_x.min            = 0.1f;
+				option_x.min            = 0.f;
 				option_x.max            = 1.f;
 				option_x.increment      = 0.1f;
 				option_x.direction      = Direction::Right;
-				option_x.color_active   = Color::Green;
-				option_x.color_inactive = Color::GreenLight;
+				option_x.color_active   = Color::Grey100;
+				option_x.color_inactive = Color::Grey50;
 				auto scrollbar_x        = Slider(option_x);
 				
 				// up-down slider
 				SliderOption<float> option_y;
 				option_y.value          = &scroll_y;
-				option_y.min            = 0.1f;
+				option_y.min            = 0.f;
 				option_y.max            = 1.f;
 				option_y.increment      = 0.1f;
 				option_y.direction      = Direction::Down;
 				option_y.color_active   = Color::Cyan2;
-				option_y.color_inactive = Color::CyanLight;
+				option_y.color_inactive = Color::Cyan2;
 				auto scrollbar_y        = Slider(option_y);
-
+				
 				Add(Container::Vertical({
 					Container::Horizontal({scrollable_content, scrollbar_y,}) | flex,
 					Container::Horizontal({scrollbar_x, Renderer([] { return text(L"x"); }),}),

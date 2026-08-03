@@ -63,14 +63,31 @@ Phylip phylip_collect(const std::string file)
 		f.ignore(std::numeric_limits<std::streamsize>::max(), '\n');  // skip first line
 		for (int i = 0; i < records.n_taxa; ++i) {
 			std::getline(f, line);
+			
+			std::stringstream ss(line);
+			ss >> records.entries[i].first >> records.entries[i].second;
 
-			// sequence length if known, so just split line by substrings
-			int seq_start = line.size() - length;
-			records.entries[i].first  = line.substr(0, seq_start);       // taxa
-			records.entries[i].second = line.substr(seq_start, length);  // sequence
+			// Sequence length is known, so just split line by substrings.
+			// Note: This also ensures consistent spacing between taxa names and
+			// sequences in the viewer window.
+			// int seq_start = line.length() - length;
+			// records.entries[i].first  = line.substr(0, seq_start);       // taxa
+			// records.entries[i].second = line.substr(seq_start, length);  // sequence
 		}
 		f.close();
 	}
 	return records;
+}
+
+int max_name_len(const Phylip records)
+{
+	int max_len = 0;
+	for (size_t i = 0; i < records.n_taxa; ++i) {
+		int contender = records.entries[i].first.length();
+		if (contender > max_len) {
+			max_len = contender;
+		}
+	}
+	return max_len;
 }
 

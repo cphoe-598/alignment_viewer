@@ -18,11 +18,9 @@ using namespace ftxui;
 // ----------------------------------------------------------------------------
 // CONSTANTS
 
-constexpr std::string_view HELP_MESSAGE = "\
-Usage: ./av <PHYLIP_FILE>\
-";
-
-const int MAX_NAME_LEN = 10;
+constexpr std::string_view HELP_MESSAGE = 
+"Alignment viewer TUI\n\n"
+"Usage: ./av <PHYLIP_FILE>\n";
 
 // ----------------------------------------------------------------------------
 // FUNCTIONS
@@ -64,16 +62,25 @@ int main(int argc, const char *argv[])
 
 	// for mapping nucleotides to colors
 	std::vector<Color> palette = {
-		Color::Red, Color::BlueViolet, Color::Green, Color::HotPink, Color::Black
+		Color(167, 35, 111, 255),
+		Color(245, 108, 64, 255),
+		Color(135, 116, 31, 255),
+		Color(46, 150, 153, 255),
+		Color(0, 0, 0, 0)
 	};
 
 	// place alignment name:sequence pairs into FTXUI vbox
 	Element content = assemble_content(records, palette);
 	
 	// create window
+	// std::string file_base(file);
+	// file_base = file_base.substr(file_base.find_last_of("/\\") + 1);
 	auto window = Window({
 			.inner  = window_content(content),
-			.title   = "Alignment",
+			.title  = [file]()->std::string {
+				std::string base(file);
+				return base.substr(base.find_last_of("/\\") + 1);
+			}(),
 			.width  = 80,
 			.height = 30,
 	});
