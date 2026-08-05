@@ -3,6 +3,7 @@
 #include <string>
 #include <map>
 
+#include "common.hpp"
 #include "phylip.hpp"
 
 #include <ftxui/dom/elements.hpp>
@@ -12,48 +13,23 @@
 
 using namespace ftxui;
 
-// ---------------------------------------------------------------------------
-// CONSTANTS
 
-// for mapping nucleotides to colors
-std::vector<Color> PALETTE_DNA = {        // DNA
-	Color(167, 35, 111, 255),  // A
-	Color(245, 108, 64, 255),  // C
-	Color(135, 116, 31, 255),  // G
-	Color(46, 150, 153, 255),  // T
-	Color(0, 0, 0, 0)          // gap
-};
-std::vector<Color> PALETTE_AA = {        // AMINO ACIDS
-	Color(171, 0, 0, 255),  // A
-	Color(171, 0, 146, 255),  // R
-	Color(171, 97, 0, 255),  // D
-	Color(171, 164, 0, 255),  // N
-	Color(134, 171, 0, 255),  // C
-	Color(73, 171, 0, 255),  // E
-	Color(11, 171, 0, 255),  // Q
-	Color(0, 171, 50, 255),  // G
-	Color(0, 171, 112, 255),  // H
-	Color(0, 161, 171, 255),  // I
-	Color(0, 125, 171, 255),  // L
-	Color(1, 1, 1, 255),  // K
-	Color(1, 1, 1, 255),  // M
-	Color(1, 1, 1, 255),  // F
-	Color(1, 1, 1, 255),  // P
-	Color(1, 1, 1, 255),  // S
-	Color(1, 1, 1, 255),  // T
-	Color(1, 1, 1, 255),  // W
-	Color(1, 1, 1, 255),  // Y
-	Color(1, 1, 1, 255),  // V
-	Color(0, 0, 0, 0)          // gap
-};
-
+std::vector<Color> get_palette(const std::string seq_type)
+{
+	std::string file;
+	switch(seq_type)
+	{
+		case "dna":
+			file = 
+	}
+}
 
 // ----------------------------------------------------------------------------
 
 /* Take a DNA string and a vector of FTXUI colors.
  * Return a vector of FTXUI text() Elements mapped to the colors.
  */
-std::vector<Element> color_dna(const std::string& dna, const std::vector<Color> palette)
+std::vector<Element> color_dna(const std::string& dna, const std::string seq_type)
 {
 	// return value
 	std::vector<Element> multicolored;
@@ -71,7 +47,7 @@ std::vector<Element> color_dna(const std::string& dna, const std::vector<Color> 
 /* Returns a vector of hboxes, each for one name:sequence
  * entry from the input Phylip file.
  */
-Element assemble_content(const Phylip records)
+Element assemble_content(const Phylip records, const std::string seq_type)
 {
 	// will collect ftxui::hboxes of name:sequence pairs
 	std::vector<Element> hboxes;
@@ -94,14 +70,16 @@ Element assemble_content(const Phylip records)
 		auto sequence = records.entries[i].second;
 
 		// map sequence characters to FTXUI colors
-		auto seq_colored = color_dna(sequence, palette);
+		auto seq_colored = color_dna(sequence, seq_type);
 
 		// juxtapose the name and sequence of each entry
-		// name.push_back(' ');
 		hboxes.push_back(hbox({
+
+			// lambda fxn pads taxa names with spaces to match longest name
 		    text( [name, len = name.length() - 1, max_len, sequence]()->std::string{
 					return name + std::string((max_len - len), ' ');
 			}() ) | bold,
+
 		    hbox(std::move(seq_colored))
 		}));
 	}
