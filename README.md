@@ -34,16 +34,22 @@ cd alignment_viewer
 
 ---
 
+## Current features
+
+-   Sequences are displayed in a resizable and scrollable window.
+-   Sequences are color-mapped by nucleotide.
+
 ## Progress
 
 ### Last time
 
--   Entries/sequences are no longer displayed in their own big, clunky boxes. They're now just line-after-line, if that makes sense.
--   Nucleotides are now mapped to colors. The color scheme I chose isn't great.
+-   Adapted the FTXUI [`scrollable.cpp`](https://arthursonzogni.github.io/FTXUI/examples_2component_2scrollbar_8cpp-example.html) sample to achieve a single, fixed window that scrolls up/down + left/right. 
 
 ### Next up (near future)
 
--   Adapt the [`scrollable.cpp` FTXUI sample project](https://arthursonzogni.github.io/FTXUI/examples_2component_2scrollbar_8cpp-example.html) to achieve a single, fixed window that scrolls up/down + left/right.
+-   As last time I did little more than copy-paste the FTXUI `scrollable.cpp` sample in order for it to work, I now need to:
+    -   Refine it to better suit my program.
+    -   Deepen my understanding of what's actually going on here. More extensive note-taking is in order.
 
 ### Next up (distant future)
 

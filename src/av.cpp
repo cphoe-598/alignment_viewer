@@ -6,9 +6,12 @@
 #include <map>
 
 #include "phylip.hpp"
+#include "display.hpp"
 
 #include <ftxui/dom/elements.hpp>
 #include <ftxui/screen/screen.hpp>
+#include <ftxui/component/app.hpp>
+#include <ftxui/component/component.hpp>
 
 using namespace ftxui;
 
@@ -35,25 +38,6 @@ std::string left_pad(const std::string& s, const int size)
 	return padded;
 }
 
-/*
- * Take a DNA string and a vector of FTXUI colors.
- * Return a vector of FTXUI text() Elements mapped to the colors.
- */
-std::vector<Element> color_dna(const std::string& dna, const std::vector<Color> palette)
-{
-	// return value
-	std::vector<Element> multicolored;
-	multicolored.reserve(dna.size());
-
-	// map characters to colors
-	std::map<char, Color> m{{'A', palette[0]}, {'C', palette[1]}, {'G', palette[2]},
-				{'T', palette[3]}, {'_', palette[4]}};
-	for (size_t i = 0; i < dna.size(); ++i) {
-		multicolored.push_back(text(std::string{dna[i]}) | bgcolor(m[dna[i]]));
-	}
-	return multicolored;
-}
-
 
 // ----------------------------------------------------------------------------
 // MAIN
@@ -75,37 +59,39 @@ int main(int argc, const char *argv[])
 		std::cout << "File contained zero entries, or could not be parsed.\n";
 	}
 
+	// ---------------------------------------------
 	// TUI display
-	std::vector<Element> hboxes;  // collection of display boxes
-	hboxes.reserve(records.n_taxa);
-	for (int i = 0; i < records.n_taxa; ++i) {
 
-		auto name = records.entries[i].first;
-		auto sequence = records.entries[i].second;
+	// for mapping nucleotides to colors
+	std::vector<Color> palette = {
+		Color::Red, Color::BlueViolet, Color::Green, Color::HotPink, Color::Black
+	};
 
-		// map sequence characters to FTXUI colors
-		std::vector<Color> palette = {
-			Color::Red, Color::BlueViolet, Color::Green, Color::HotPink, Color::Black
-		};
-		auto seq_colored = color_dna(sequence, palette);
-
-		// juxtapose the name and sequence of each entry
-		name.push_back(' ');
-		hboxes.push_back(hbox({
-		    text(name) | bold,
-		    hbox(std::move(seq_colored))
-		}));
-	}
+	// place alignment name:sequence pairs into FTXUI vbox
+	Element content = assemble_content(records, palette);
+	
+	// create window
+	auto window = Window({
+			.inner  = window_content(content),
+			.title   = "Alignment",
+			.width  = 80,
+			.height = 30,
+	});
+	auto screen = App::Fullscreen();
+	screen.Loop(window);
 
 
+	/*
 	// create full-width/-height screen, limited to [LENGTH] wide
 	// Element document = document | size(WIDTH, LESS_THAN, (MAX_NAME_LEN + records.seq_len + 2));
-	Element document = vbox(hboxes);
+	// Element document = vbox(content);
 	auto screen = Screen::Create(
 		Dimension::Full(), Dimension::Fit(document)  // W, H
 	);
 	Render(screen, document);
 	screen.Print();
+	*/
 
 	return 0;
 }
+
